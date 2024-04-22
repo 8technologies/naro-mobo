@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_vision/flutter_vision.dart';
 import 'package:flutx/flutx.dart';
 import 'package:get/get.dart';
 import 'package:marcci/theme/app_theme.dart';
@@ -6,7 +7,17 @@ import 'package:marcci/utils/Utils.dart';
 
 import 'LeafspotDetectionScreen.dart';
 
-class AIHomeScreen extends StatelessWidget {
+class AIHomeScreen extends StatefulWidget {
+  @override
+  State<AIHomeScreen> createState() => _AIHomeScreenState();
+}
+
+class _AIHomeScreenState extends State<AIHomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

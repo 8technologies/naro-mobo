@@ -1,79 +1,440 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_vision/flutter_vision.dart';
 import 'package:flutx/widgets/text/text.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tflite_v2/tflite_v2.dart';
 
 import '../../theme/custom_theme.dart';
 import '../../utils/circular_progress.dart';
-
 class LeafSpotDetectionScreen extends StatefulWidget {
-  const LeafSpotDetectionScreen({super.key});
+
+  const LeafSpotDetectionScreen({Key? key,}) : super(key: key);
 
   @override
   State<LeafSpotDetectionScreen> createState() => _LeafSpotDetectionScreenState();
 }
 
 class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
-  File? selectedImage;
+  List<Map<String, dynamic>> yoloResults = [];
+  final FlutterVision vision = FlutterVision();
+  File? imageFile;
+  int imageHeight = 1;
+  int imageWidth = 1;
+  bool isLoaded = false;
   bool _processing = false;
-  double _processingPercentage = 0.0;
   String? _disease;
-  double _confidence =0.0;
+  double _confidence = 0.0;
   String? _recommendation;
 
-
-
-  Future<void> _processUploadedImage() async {
-    if (selectedImage == null) {
-      // Show error message or prompt user to upload an image
-      return;
-    }
-
-    setState(() {
-      _processing = true;
-    });
-    print("Processing");
-    try {
-      await Tflite.loadModel(
-        model: 'assets/ai_model/leafspot_Naro.tflite',
-        labels: 'assets/ai_model/labels.txt',
-      );
-      final List<dynamic>? results = await Tflite.runModelOnImage(
-        path: selectedImage!.path,
-        imageMean: 0.0,   // defaults to 117.0
-        imageStd: 255.0,  // defaults to 1.0
-        numResults: 2,    // defaults to 5
-        threshold: 0.2,   // defaults to 0.1
-        asynch: true
-      );
-      print("Processing ended");
+  @override
+  void initState() {
+    super.initState();
+    loadYoloModel().then((value) {
       setState(() {
-        _processing = false;
-        _processResults(results!);
+        isLoaded = true;
       });
-    } catch (e) {
-      print("Error processing image: $e");
-      // Handle the error, show a message to the user, etc.
-    } finally {
-      // Dispose of the TensorFlow Lite interpreter
-      await Tflite.close();
-      setState(() {
-        _processing = false;
-      });
-    }
-
-    setState(() {
-      _processing = false;
     });
   }
 
+  @override
+  void dispose() async {
+    super.dispose();
+    vision.closeYoloModel();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+    if (!isLoaded) {
+      loadYoloModel();
+      return Scaffold(
+        appBar: AppBar(
+          title: FxText.titleLarge(
+            'Model has not yet loaded',
+            color: Colors.white,
+            fontWeight: 900,
+          ),
+          backgroundColor: CustomTheme.primary,
+        ),
+        body: Center(
+          child: Text("Model not loaded, waiting for it"),
+        ),
+      );
+
+    }
+    return Scaffold(
+      appBar: AppBar(
+        title: FxText.titleLarge(
+        'NARO AI VISION',
+        color: Colors.white,
+        fontWeight: 900,
+      ),
+        backgroundColor: CustomTheme.primary,
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            flex: 4,
+            child: Stack(
+              fit: StackFit.loose,
+              children: [
+                imageFile != null ? Image.file(imageFile!)
+                    :Container(
+                  alignment: Alignment.center,
+                  height: MediaQuery.of(context).size.width* 0.8,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                      image: (imageFile!= null)
+                          ? DecorationImage(
+                        image: FileImage(imageFile!),
+                        fit: BoxFit.cover,
+                      )
+                          : null,
+                      color: imageFile == null? Color(0xffC4C4C4).withOpacity(0.2): Colors.transparent,
+                      borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(25), bottomRight: Radius.circular(25))),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: const Text(
+                      "Your processed image with the detected disease shall appear hear",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          fontFamily: 'Time New Roman'
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+
+
+                ),
+                ...displayBoxesAroundRecognizedObjects(size),
+              ],
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "Pick or Take an image",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    fontFamily: 'Time New Roman'
+                ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  _processing ? null : imageDialog(context, true);
+                },
+                child: Image.asset(
+                  'assets/images/uploadIcon.png',
+                  width: 50,
+                  height: 50,
+                ),
+              ),
+            ],
+          ),
+          Expanded(
+            flex: 6,
+            child: SingleChildScrollView(
+              child: _processing
+                  ? Align(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      value: _confidence,
+                    ),
+                    const Text(
+                      'Processing...',
+                      style: TextStyle(fontSize: 16.0),
+                    )
+                  ],
+                ),
+              )
+                  : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (_disease != null) SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    height: 100.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const Text(
+                          "The Confidence of result is:",
+                          style: TextStyle(
+                              fontSize: 16, fontFamily: 'Time New Roman'),
+                        ),
+                        SizedBox(
+                          width: 70,
+                          height: 70,
+                          child: CustomPaint(
+                            painter: CircleProgressBar(
+                              percentage: _confidence,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ) else const SizedBox(height: 0,),
+                  const SizedBox(height: 20.0),
+                  _disease != null
+                      ? Column(
+                    children: [
+                      Text(
+                        'Disease: $_disease',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            fontFamily: 'Time New Roman'),
+                      ),
+
+                      const SizedBox(height: 10.0),
+                      Text('$_recommendation',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            fontFamily: 'Time New Roman'
+                        ),
+                      ),
+                    ],
+                  )
+                      : Container(),
+                  const SizedBox(height: 20.0),
+                  imageFile != null && _disease != null
+                      ? Container(
+                    padding: const EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              child: Image.file(
+                                imageFile!,
+                                width: 30,
+                                height: 30,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            const Text("Cercospora arachidicola Leaf Spot",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: 'Time New Roman'),
+                            ),
+                          ],
+                        ),
+                        const Text(
+                          "Groundnut leaf spot is a common fungal disease affecting groundnut (peanut) plants, caused by various pathogens such as Cercospora arachidicola and Cercosporidium personatum. It typically manifests as small, dark spots on the leaves, which can merge and cause extensive damage if not managed properly",
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontFamily: 'Time New Roman'),
+                        ),
+                      ],
+                    ),
+                  )
+                      : const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      'After selecting an image processing it your results will appear here',
+                      style: TextStyle(
+                          fontSize: 20, fontFamily: 'Time New Roman'),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: ElevatedButton(
+        onPressed: _disease != null? () {
+          // Display bottom sheet with recommendations
+          _showRecommendations(context);
+        }: null,
+        child:
+        _disease != null?const Text('View Recommendations'):const Text('No results yet'),
+      ),
+    );
+
+  }
+
+  Future<void> loadYoloModel() async {
+    await vision.loadYoloModel(
+        labels: 'assets/aimodel/labels.txt',
+        modelPath: 'assets/aimodel/best_float32.tflite',
+        modelVersion: "yolov8",
+        quantization: false,
+        numThreads: 2,
+        useGpu: false);
+    setState(() {
+      isLoaded = true;
+    });
+  }
+
+  Future<void> pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    // Capture a photo
+    final XFile? photo = await picker.pickImage(source: ImageSource.gallery);
+    if (photo != null) {
+      setState(() {
+        imageFile = File(photo.path);
+      });
+    }
+  }
+
+  yoloOnImage() async {
+    setState(() {
+      _processing = true;
+    });
+
+    yoloResults.clear();
+    Uint8List byte = await imageFile!.readAsBytes();
+    final image = await decodeImageFromList(byte);
+    imageHeight = image.height;
+    imageWidth = image.width;
+
+    try {
+      final result = await Future.delayed(Duration(seconds: 20), () {
+        return vision.yoloOnImage(
+          bytesList: byte,
+          imageHeight: image.height,
+          imageWidth: image.width,
+          iouThreshold: 0.8,
+          confThreshold: 0.4,
+          classThreshold: 0.5,
+        );
+
+      });
+      vision.closeYoloModel();
+
+      if (result.isNotEmpty) {
+        setState(() {
+          yoloResults = result;
+          _processing = false;
+        });
+        _processResults(result);
+      } else {
+        setState(() {
+          _processing = false;
+        });
+        // Handle case where no objects are detected
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('No Results obtained'),
+            content: Text('You might have picked unclear or not groundnut leaf image'),
+            actions: [
+              TextButton(
+                onPressed: (){
+                  Navigator.of(context).pop();
+                  setState(() {
+                    imageFile = null;
+                  });
+
+                  },
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _processing = false;
+      });
+      // Handle timeout or other errors
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('An error occurred while processing the image. \n$e'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+
+  List<Widget> displayBoxesAroundRecognizedObjects(Size screen) {
+    if (yoloResults.isEmpty) return [];
+
+    double factorX = screen.width / imageWidth;
+    double imgRatio = imageWidth / imageHeight;
+    double newWidth = imageWidth * factorX;
+    double newHeight = newWidth / imgRatio;
+    double factorY = newHeight / imageHeight;
+
+    Color colorPick = const Color.fromARGB(255, 50, 233, 30);
+    return yoloResults.map((result) {
+      double boxWidth = (result["box"][2] - result["box"][0]) * factorX * 0.8;
+      double boxHeight = (result["box"][3] - result["box"][1]) * factorY * 0.8;
+
+      // Calculate text width using TextPainter
+      TextPainter textPainter = TextPainter(
+        text: TextSpan(
+          text:
+          "${result['tag']} ${(result['box'][4] * 100).toStringAsFixed(0)}%",
+          style: const TextStyle(fontSize: 18.0),
+        ),
+        maxLines: 1,
+        textDirection: TextDirection.ltr,
+      );
+      textPainter.layout();
+      double textWidth = textPainter.size.width;
+
+      if (textWidth > boxWidth) {
+        // Increase box width if tag text doesn't fit
+        boxWidth = textWidth + 20;
+      }
+
+      return Positioned(
+        left: result["box"][0] * factorX,
+        top: result["box"][1] * factorY,
+        width: boxWidth,
+        height: boxHeight,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+            border: Border.all(color: Colors.pink, width: 2.0),
+          ),
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Text(
+              "${result['tag']} ${(result['box'][4] * 100).toStringAsFixed(0)}%",
+              style: TextStyle(
+                background: Paint()..color = colorPick,
+                color: Colors.white,
+                fontSize: 18.0,
+              ),
+            ),
+          ),
+        ),
+      );
+    }).toList();
+  }
 
   void _processResults(List<dynamic> results) {
     // Assume results are in the format [disease, confidence]
-    _disease = results[0]['label'];
-    _confidence = results[0]['confidence'];
+    _disease = results[0]['tag'];
+    _confidence = results[0]['box'][4];
     // Get recommendation based on the detected disease
     _recommendation = _getRecommendationForDisease(_disease);
   }
@@ -92,181 +453,10 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
 
     if (pickedImage != null) {
       setState(() {
-        selectedImage = File(pickedImage.path);
-        _processUploadedImage(); // Move this inside the if block
+        imageFile = File(pickedImage.path);
+        yoloOnImage();
       });
     }
-
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: BackButton(),
-        backgroundColor: CustomTheme.primary,
-        title: FxText.titleLarge(
-          'NARO AI VISION',
-          color: Colors.white,
-          fontWeight: 900,
-        ),
-      ),
-      body: Column(
-        children: [
-          Align(
-            child: Container(
-              alignment: Alignment.center,
-              height: MediaQuery.of(context).size.width* 0.8,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                  image: (selectedImage != null)
-                      ? DecorationImage(
-                    image: FileImage(selectedImage!),
-                    fit: BoxFit.cover,
-                  )
-                      : null,
-                  color: selectedImage == null? Color(0xffC4C4C4).withOpacity(0.2): Colors.transparent,
-                  borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(25), bottomRight: Radius.circular(25))),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                // mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.05,
-                  ),
-                  Container(
-                    width: 76,
-                    height: 59,
-                    child: Image.asset('assets/images/uploadIcon.png'),
-                  ),
-                  Text(
-                     'Click and upload image',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 19,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  ElevatedButton(
-                      onPressed: () async {
-                        _processing? null:
-                        imageDialog(context, true);
-                      },
-                    child: Text('Upload'),
-                  ),
-      
-      
-                ],
-              ),
-      
-            ),
-      
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              child:  _processing?
-              Align(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                      value: _confidence,
-                    ),
-                    const Text(
-                      'Processing...',
-                      style: TextStyle(fontSize: 16.0),
-                    )
-                  ],
-                ),
-              ): Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width*0.9,
-                    height: 100.0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        const Text("The percentage of disease is:"),
-                        Container(
-                          width: 70,
-                          height: 70,
-                          child: CustomPaint(
-                            painter: CircleProgressBar(
-                              percentage: _confidence,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20.0),
-                  _disease != null && _confidence != null
-                      ? Column(
-                    children: [
-                      Text('Disease: $_disease'),
-                      Text('Confidence: ${(_confidence! * 100).toStringAsFixed(2)}%'),
-                      SizedBox(height: 10.0),
-                      Text('Recommendation: $_recommendation'),
-                    ],
-                  )
-                      : Container(),
-                  const SizedBox(height: 20.0),
-                  Container(
-                    padding: const EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        selectedImage != null
-                            ? Container(
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  CircleAvatar(
-                                    child: Image.file(
-                                      selectedImage!,
-                                      width: 30,
-                                      height: 30,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-      
-                                  const Text("Cercospora arachidicola"),
-                                  const Text("Leaf Spot")
-                                ],
-                              ),
-                              const Text("Groundnut leaf spot is a common fungal disease affecting groundnut (peanut) plants, caused by various pathogens such as Cercospora arachidicola and Cercosporidium personatum. It typically manifests as small, dark spots on the leaves, which can merge and cause extensive damage if not managed properly"),
-                              ElevatedButton(
-                                onPressed: () {
-                                  // Display bottom sheet with recommendations
-                                  _showRecommendations(context);
-                                },
-                                child: const Text('View Recommendations'),
-                              ),
-                            ],
-                          ),
-                        )
-                            : const Text('No image selected'),
-                        const SizedBox(height: 10.0),
-      
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   void _showRecommendations(BuildContext context) {
@@ -311,9 +501,7 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
                       if (image) {
                         getImageDialog(ImageSource.gallery);
                         Navigator.pop(context);
-                      } else {
-
-                      }
+                      } else {}
                     },
                     icon: const Icon(Icons.image)),
                 IconButton(
@@ -321,9 +509,7 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
                       if (image) {
                         getImageDialog(ImageSource.camera);
                         Navigator.pop(context);
-                      } else {
-
-                      }
+                      } else {}
                     },
                     icon: const Icon(Icons.camera_alt)),
               ],
@@ -332,13 +518,6 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
         },
         context: context);
   }
-
-  @override
-  void dispose() {
-    Tflite.close();
-    super.dispose();
-  }
-
 }
 
 

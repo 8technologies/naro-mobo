@@ -31,7 +31,9 @@ dependencies:
   flutter_easyloading: ^3.0.5
   fluttertoast: ^8.0.9
 
-  tflite_v2: ^1.0.0
+#Dependency for ai model
+  flutter_vision: ^1.1.4
+
 
   get: ^4.6.5
   sqflite: ^2.2.4+1
@@ -66,7 +68,9 @@ flutter:
   assets:
     - assets/
     - assets/images/
-    - assets/ai_model/
+    - assets/aimodel/
+    - assets/aimodel/best_float32.tflite
+    - assets/aimodel/labels.txt
     - assets/images/logo.png
     - assets/images/ai_prediction_1.jpeg
     - assets/images/ai_prediction.jpeg
