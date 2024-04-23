@@ -30,7 +30,7 @@ class CircleProgressBar extends CustomPainter {
         fontSize: 20.0,
         fontWeight: FontWeight.bold,
       ),
-      text: '${(percentage * 100).toInt()}%',
+      text: '${(percentage * 100).toStringAsFixed(0)}%',
     );
     TextPainter tp = TextPainter(
       text: span,

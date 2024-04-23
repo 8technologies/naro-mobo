@@ -128,9 +128,16 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
                 width: 10,
               ),
               ElevatedButton(
-                onPressed: () {
-                  _processing ? null : imageDialog(context, true);
-                },
+                onPressed: !_processing? () {
+                  setState(() {
+                    imageFile = null;
+                    _confidence = 0.0;
+                    _disease = null;
+                    _recommendation =null;
+                    yoloResults = [];
+                  });
+                 imageDialog(context, true);
+                }:null,
                 child: Image.asset(
                   'assets/images/uploadIcon.png',
                   width: 50,
@@ -260,12 +267,12 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: ElevatedButton(
-        onPressed: _disease != null? () {
+        onPressed: _disease != null&& _confidence >0? () {
           // Display bottom sheet with recommendations
           _showRecommendations(context);
         }: null,
         child:
-        _disease != null?const Text('View Recommendations'):const Text('No results yet'),
+        _disease != null && _confidence >0?const Text('View Recommendations'): _disease != null && _confidence <0 ?const Text('No confidence in results'):const Text('No results yet'),
       ),
     );
 
@@ -295,6 +302,8 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
     }
   }
 
+
+
   yoloOnImage() async {
     setState(() {
       _processing = true;
@@ -307,7 +316,8 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
     imageWidth = image.width;
 
     try {
-      final result = await Future.delayed(Duration(seconds: 20), () {
+      final result = await Future.delayed(Duration(seconds: 5), () {
+        print("Model has started running");
         return vision.yoloOnImage(
           bytesList: byte,
           imageHeight: image.height,
@@ -316,9 +326,8 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
           confThreshold: 0.4,
           classThreshold: 0.5,
         );
-
       });
-      vision.closeYoloModel();
+      print("Model has completed running successfully");
 
       if (result.isNotEmpty) {
         setState(() {
@@ -330,21 +339,28 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
         setState(() {
           _processing = false;
         });
-        // Handle case where no objects are detected
+        // Handle case where No results obtained
+        result.isEmpty?
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('No Results obtained'),
-            content: Text('You might have picked unclear or not groundnut leaf image'),
+            title: Text('No results obtained'),
+            content: Text('Either your image is unclear or it is not groundnut leaf'),
             actions: [
               TextButton(
-                onPressed: (){
-                  Navigator.of(context).pop();
-                  setState(() {
-                    imageFile = null;
-                  });
-
-                  },
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        ):showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Delay'),
+            content: Text('The model is taking too much time in processing'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
                 child: Text('OK'),
               ),
             ],
@@ -360,7 +376,7 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
         context: context,
         builder: (context) => AlertDialog(
           title: Text('Error'),
-          content: Text('An error occurred while processing the image. \n$e'),
+          content: Text('An error occurred while processing the image.'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -465,12 +481,12 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
       builder: (BuildContext context) {
         return Container(
           padding: const EdgeInsets.all(20.0),
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Disease Recommendations:',
+                'Recommendations on $_disease:',
                 style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10.0),
