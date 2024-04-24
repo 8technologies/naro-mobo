@@ -69,8 +69,10 @@ flutter:
     - assets/
     - assets/images/
     - assets/aimodel/
-    - assets/aimodel/best_float32.tflite
-    - assets/aimodel/labels.txt
+    - assets/aimodel/leafspot_identifier_model.tflite
+    - assets/aimodel/labels_leafspot.txt
+    - assets/aimodel/variety_identifier_model.tflite
+    - assets/aimodel/labels_variety.txt
     - assets/images/logo.png
     - assets/images/ai_prediction_1.jpeg
     - assets/images/ai_prediction.jpeg

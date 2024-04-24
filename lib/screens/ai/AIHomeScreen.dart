@@ -63,11 +63,16 @@ class _AIHomeScreenState extends State<AIHomeScreen> {
               ),
             ),
             SizedBox(height: 15.0),
-            FeatureItem(
-              icon: 'ai_prediction.jpeg',
-              title: 'Variety Detection',
-              description:
-                  'Identify groundnut varieties with your phone camera.',
+            FxContainer(
+              child: FeatureItem(
+                icon: 'ai_prediction.jpeg',
+                title: 'Variety Detection',
+                description:
+                    'Identify groundnut varieties with your phone camera.',
+              ),
+                onTap: () {
+                  Get.to(() => LeafSpotDetectionScreen(model: 'assets/aimodel/variety_identifier_model.tflite', label: 'assets/aimodel/labels_variety.txt', isDisease: false,));
+                }
             ),
             FxContainer(
               child: FeatureItem(
@@ -77,7 +82,7 @@ class _AIHomeScreenState extends State<AIHomeScreen> {
                     'Detect pests, diseases, and leaf spots on your crops.',
               ),
                 onTap: () {
-                  Get.to(() => LeafSpotDetectionScreen());
+                  Get.to(() => LeafSpotDetectionScreen(model: 'assets/aimodel/leafspot_identifier_model.tflite', label: 'assets/aimodel/labels_leafspot.txt', isDisease: true,));
                 }
             ),
             FeatureItem(

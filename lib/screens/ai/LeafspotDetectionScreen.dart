@@ -9,14 +9,17 @@ import 'package:image_picker/image_picker.dart';
 import '../../theme/custom_theme.dart';
 import '../../utils/circular_progress.dart';
 class LeafSpotDetectionScreen extends StatefulWidget {
+  final String model;
+  final String label;
+  final bool isDisease;
 
-  const LeafSpotDetectionScreen({Key? key,}) : super(key: key);
+  LeafSpotDetectionScreen({Key? key, required this.model, required this.label, required this.isDisease}) : super(key: key);
 
   @override
   State<LeafSpotDetectionScreen> createState() => _LeafSpotDetectionScreenState();
 }
 
-class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
+class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> with TickerProviderStateMixin {
   List<Map<String, dynamic>> yoloResults = [];
   final FlutterVision vision = FlutterVision();
   File? imageFile;
@@ -27,15 +30,29 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
   String? _disease;
   double _confidence = 0.0;
   String? _recommendation;
+  String? _model;
+  String? _label;
+  TabController? _tabController;
+  bool? isDisease;
 
   @override
   void initState() {
     super.initState();
+    initModel();
     loadYoloModel().then((value) {
       setState(() {
         isLoaded = true;
       });
     });
+    _tabController = TabController(length: 4, vsync: this);
+    
+
+  }
+
+  initModel() async {
+   _model = widget.model;
+   _label = widget.label;
+   isDisease = widget.isDisease;
   }
 
   @override
@@ -72,6 +89,64 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
         fontWeight: 900,
       ),
         backgroundColor: CustomTheme.primary,
+          actions: [
+      PopupMenuButton<String>(
+          onSelected: (String choice) {
+            // Handle the selected menu item here
+          },
+          itemBuilder: (BuildContext context) {
+            return [
+              PopupMenuItem<String>(
+                value: 'Disease Identifier',
+                child: Text('Disease Identifier',
+                  style: TextStyle(
+                      color: isDisease!? Colors.green: Colors.black
+                  ),
+                ),
+                onTap: (){
+                  _model = 'assets/aimodel/leafspot_identifier_model.tflite';
+                  _label = 'assets/aimodel/labels_leafspot.txt';
+                  setState(() {
+                    isDisease = true;
+                    imageFile = null;
+                    _confidence = 0.0;
+                    _disease = null;
+                    _recommendation =null;
+                    yoloResults = [];
+                  });
+                  loadYoloModel();
+                },
+              ),
+              PopupMenuItem<String>(
+                value: 'Variety Identifier',
+                child: Text('Variety Identifier',
+                  style: TextStyle(
+                    color: isDisease!? Colors.black: Colors.green
+                  ),
+                ),
+                onTap: (){
+                  _model = 'assets/aimodel/variety_identifier_model.tflite';
+                  _label = 'assets/aimodel/labels_variety.txt';
+                  setState(() {
+                    isDisease = false;
+                    imageFile = null;
+                    _confidence = 0.0;
+                    _disease = null;
+                    _recommendation =null;
+                    yoloResults = [];
+                  });
+                  loadYoloModel();
+                },
+              ),
+              const PopupMenuItem<String>(
+                value: 'Yield Predictor',
+                child: Text('Yield Predictor'),
+              ),
+
+            ];
+          }
+            )
+    ]
       ),
       body: Column(
         children: [
@@ -80,7 +155,11 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
             child: Stack(
               fit: StackFit.loose,
               children: [
-                imageFile != null ? Image.file(imageFile!)
+                imageFile != null ? Image.file(
+                  imageFile!,
+                  fit: BoxFit.fill,
+                  scale: 0.4,
+                )
                     :Container(
                   alignment: Alignment.center,
                   height: MediaQuery.of(context).size.width* 0.8,
@@ -96,8 +175,8 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
                       borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(25), bottomRight: Radius.circular(25))),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: const Text(
-                      "Your processed image with the detected disease shall appear hear",
+                    child: Text(
+                      isDisease!?"Your processed image with the detected disease shall appear hear":"Your processed image with the identified variety shall appear hear",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -148,13 +227,14 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
           ),
           Expanded(
             flex: 6,
-            child: SingleChildScrollView(
-              child: _processing
+            child: NestedScrollView(
+              body:_processing
                   ? Align(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+
                     CircularProgressIndicator(
                       value: _confidence,
                     ),
@@ -165,102 +245,150 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
                   ],
                 ),
               )
-                  : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                  : imageFile != null &&_disease != null?
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  if (_disease != null) SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    height: 100.0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        const Text(
-                          "The Confidence of result is:",
-                          style: TextStyle(
-                              fontSize: 16, fontFamily: 'Time New Roman'),
+                  TabBar(
+                    isScrollable: true,
+                    controller: _tabController,
+                    labelColor: Colors.blue,
+                    dividerColor: Colors.transparent,
+                    tabAlignment: TabAlignment.start,
+                    unselectedLabelColor: Colors.black,
+                    onTap: (index){},
+                    labelStyle: TextStyle(
+                      fontSize: 20
+                    ),
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    indicator: const ShapeDecoration(
+                      shape: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.blue, // Set the color to transparent
+                          width: 2,
                         ),
-                        SizedBox(
-                          width: 70,
-                          height: 70,
-                          child: CustomPaint(
-                            painter: CircleProgressBar(
-                              percentage: _confidence,
+                      ),
+                    ),
+                    tabs: [
+                      Text("Results"),
+                      Text("Overview"),
+                      isDisease!?Text("Causes"): Text("Benefits"),
+                      isDisease!?Text("Prevention & Cure"): Text("Other Info"),
+
+                    ],
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                        controller: _tabController,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListView(
+                              children: [
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width * 0.9,
+                                  height: 100.0,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      const Text(
+                                        "The Confidence of result is:",
+                                        style: TextStyle(
+                                            fontSize: 16, fontFamily: 'Time New Roman'),
+                                      ),
+                                      SizedBox(
+                                        width: 70,
+                                        height: 70,
+                                        child: CustomPaint(
+                                          painter: CircleProgressBar(
+                                            percentage: _confidence,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                isDisease!?Text(
+                                  'Disease: $_disease',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      fontFamily: 'Time New Roman'),
+                                )
+                                :Text(
+                                  'Variety: $_disease',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      fontFamily: 'Time New Roman'),
+                                ),
+
+                                const SizedBox(height: 10.0),
+                                Text('$_recommendation',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      fontFamily: 'Time New Roman'
+                                  ),
+                                ),
+
+                                Row(
+                                  children: [
+                                    CircleAvatar(
+                                      child: Image.file(
+                                        imageFile!,
+                                        width: 30,
+                                        height: 30,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    Text(_disease!,
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontFamily: 'Time New Roman'),
+                                    ),
+                                  ],
+                                ),
+                                isDisease!? Text(
+                                  "Groundnut leaf spot is a common fungal disease affecting groundnut (peanut) plants, caused by various pathogens such as Cercospora arachidicola and Cercosporidium personatum. It typically manifests as small, dark spots on the leaves, which can merge and cause extensive damage if not managed properly",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontFamily: 'Time New Roman'),
+                                )
+                                :Text("Coming soon",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontFamily: 'Time New Roman'),
+                                ),
+                                const SizedBox(height: 20.0),
+                              ],
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ) else const SizedBox(height: 0,),
-                  const SizedBox(height: 20.0),
-                  _disease != null
-                      ? Column(
-                    children: [
-                      Text(
-                        'Disease: $_disease',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            fontFamily: 'Time New Roman'),
+                          Center(
+                            child: isDisease!?Text("Disease overview shall appear here"):Text("Variety Overview shall appear here"),
+                          ),
+                          Center(
+                            child: isDisease!?Text("Disease causes shall appear here"):Text("Variety benefits shall appear here"),
+                          ),
+                          Center(
+                            child: isDisease!?Text("Disease prevention and cure shall appear here"): Text("Other information about variety shall appear here"),
+                          )
+                        ],
                       ),
-
-                      const SizedBox(height: 10.0),
-                      Text('$_recommendation',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            fontFamily: 'Time New Roman'
-                        ),
-                      ),
-                    ],
-                  )
-                      : Container(),
-                  const SizedBox(height: 20.0),
-                  imageFile != null && _disease != null
-                      ? Container(
-                    padding: const EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              child: Image.file(
-                                imageFile!,
-                                width: 30,
-                                height: 30,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            const Text("Cercospora arachidicola Leaf Spot",
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: 'Time New Roman'),
-                            ),
-                          ],
-                        ),
-                        const Text(
-                          "Groundnut leaf spot is a common fungal disease affecting groundnut (peanut) plants, caused by various pathogens such as Cercospora arachidicola and Cercosporidium personatum. It typically manifests as small, dark spots on the leaves, which can merge and cause extensive damage if not managed properly",
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontFamily: 'Time New Roman'),
-                        ),
-                      ],
-                    ),
-                  )
-                      : const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      'After selecting an image processing it your results will appear here',
-                      style: TextStyle(
-                          fontSize: 20, fontFamily: 'Time New Roman'),
-                      textAlign: TextAlign.center,
-                    ),
                   ),
+
+
                 ],
-              ),
+              )
+              :const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'After selecting an image processing it your results will appear here',
+                  style: TextStyle(
+                      fontSize: 20, fontFamily: 'Time New Roman'),
+                  textAlign: TextAlign.center,
+                ),
+              ), headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) { return []; },
             ),
           ),
         ],
@@ -280,8 +408,8 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> {
 
   Future<void> loadYoloModel() async {
     await vision.loadYoloModel(
-        labels: 'assets/aimodel/labels.txt',
-        modelPath: 'assets/aimodel/best_float32.tflite',
+        labels: _label!,
+        modelPath: _model!,
         modelVersion: "yolov8",
         quantization: false,
         numThreads: 2,
