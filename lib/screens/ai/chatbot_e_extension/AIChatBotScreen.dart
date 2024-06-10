@@ -6,6 +6,7 @@ import 'package:marcci/theme/app_theme.dart';
 import 'package:flutx/flutx.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart';
+import 'package:marcci/utils/AppConfig.dart';
 import 'package:marcci/utils/Utils.dart';
 
 class AIChatbotScreen extends StatefulWidget {
@@ -96,15 +97,19 @@ class _AIChatbotScreenState extends State<AIChatbotScreen> {
       _messages.add(Message(text: _controller.text, isUser: true));
     });
 
-    final response =
-        await _dio.post('http://your_laravel_api_endpoint/api/chat', data: {
+    final response = await _dio.post(AppConfig.API_BASE_URL + "/chat", data: {
       'message': _controller.text,
     });
 
-    setState(() {
-      _messages.add(Message(text: response.data['response'], isUser: false));
-    });
-
     _controller.clear();
+
+    if (response.statusCode == 200) {
+      setState(() {
+        _messages.add(Message(text: response.data['response'], isUser: false));
+      });
+    } else {
+      // Handle the error appropriately in your app
+      Utils.toast('Failed to get response from the server.');
+    }
   }
 }
