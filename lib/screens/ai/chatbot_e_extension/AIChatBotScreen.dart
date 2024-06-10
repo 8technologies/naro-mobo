@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marcci/models/Message.dart';
 import 'package:marcci/screens/ai/chatbot_e_extension/widgets/GlowingSendButtonWidget.dart';
 import 'package:marcci/screens/ai/chatbot_e_extension/widgets/SubtleTextField.dart';
 import 'package:marcci/theme/app_theme.dart';
@@ -106,11 +107,4 @@ class _AIChatbotScreenState extends State<AIChatbotScreen> {
 
     _controller.clear();
   }
-}
-
-class Message {
-  final String text;
-  final bool isUser;
-
-  Message({required this.text, required this.isUser});
 }
