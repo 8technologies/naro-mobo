@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_vision/flutter_vision.dart';
 import 'package:flutx/flutx.dart';
 import 'package:get/get.dart';
+import 'package:marcci/screens/ai/chatbot_e_extension/AIChatBotScreen.dart';
 import 'package:marcci/theme/app_theme.dart';
 import 'package:marcci/utils/Utils.dart';
 
@@ -64,32 +65,56 @@ class _AIHomeScreenState extends State<AIHomeScreen> {
             ),
             SizedBox(height: 15.0),
             FxContainer(
-              child: FeatureItem(
-                icon: 'ai_prediction.jpeg',
-                title: 'Variety Detection',
-                description:
-                    'Identify groundnut varieties with your phone camera.',
-              ),
+                child: FeatureItem(
+                  icon: 'ai_prediction.jpeg',
+                  title: 'Variety Detection',
+                  description:
+                      'Identify groundnut varieties with your phone camera.',
+                ),
                 onTap: () {
-                  Get.to(() => LeafSpotDetectionScreen(model: 'assets/aimodel/variety_identifier_model.tflite', label: 'assets/aimodel/labels_variety.txt', isDisease: false,));
-                }
-            ),
+                  Get.to(() => LeafSpotDetectionScreen(
+                        model: 'assets/aimodel/variety_identifier_model.tflite',
+                        label: 'assets/aimodel/labels_variety.txt',
+                        isDisease: false,
+                      ));
+                }),
+            SizedBox(height: 16.0),
+            FxContainer(
+                child: FeatureItem(
+                  icon: 'ai_pests_detect.jpeg',
+                  title: 'Pest & Disease Detection',
+                  description:
+                      'Detect pests, diseases, and leaf spots on your crops.',
+                ),
+                onTap: () {
+                  Get.to(() => LeafSpotDetectionScreen(
+                        model:
+                            'assets/aimodel/leafspot_identifier_model.tflite',
+                        label: 'assets/aimodel/labels_leafspot.txt',
+                        isDisease: true,
+                      ));
+                }),
+            SizedBox(height: 16.0),
             FxContainer(
               child: FeatureItem(
-                icon: 'ai_pests_detect.jpeg',
-                title: 'Pest & Disease Detection',
+                icon: 'ai_prediction_1.jpeg',
+                title: 'AI Chatbot',
                 description:
-                    'Detect pests, diseases, and leaf spots on your crops.',
+                    '24/7 Instant support for all your farming queries.',
               ),
-                onTap: () {
-                  Get.to(() => LeafSpotDetectionScreen(model: 'assets/aimodel/leafspot_identifier_model.tflite', label: 'assets/aimodel/labels_leafspot.txt', isDisease: true,));
-                }
+              onTap: () {
+                Get.to(() => AIChatbotScreen());
+              },
             ),
-            FeatureItem(
-              icon: "ai_prediction_1.jpeg",
-              title: 'Yield Prediction',
-              description: 'AI-driven yield prediction for better planning.',
+            SizedBox(height: 16.0),
+            FxContainer(
+              child: FeatureItem(
+                icon: "ai_prediction_1.jpeg",
+                title: 'Yield Prediction',
+                description: 'AI-driven yield prediction for better planning.',
+              ),
             ),
+            SizedBox(height: 16.0),
             FxButton.block(
               onPressed: () async {
                 Utils.toast('Registering for notification...');
