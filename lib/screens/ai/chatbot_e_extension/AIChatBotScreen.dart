@@ -70,7 +70,7 @@ class _AIChatbotScreenState extends State<AIChatbotScreen> {
 
   Widget _buildInputArea() {
     return Padding(
-      padding: EdgeInsets.all(8.0),
+      padding: EdgeInsets.only(top: 10),
       child: Row(
         children: <Widget>[
           Expanded(

@@ -11,7 +11,7 @@ class SubtleTextField extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(24.0),
       ),
       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: TextField(
