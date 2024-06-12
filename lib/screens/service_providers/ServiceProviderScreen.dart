@@ -100,8 +100,8 @@ class _ServiceProviderScreenState extends State<ServiceProviderScreen>
               padding:
                   EdgeInsets.only(bottom: 10, right: 10, left: 10, top: 10),
               child: FxButton.block(
-                child: FxText.titleLarge(
-                  'CONTACT THE SELLER',
+                child: FxText.titleMedium(
+                  'CONTACT SERVICE PROVIDER',
                   color: Colors.white,
                   fontWeight: 900,
                 ),

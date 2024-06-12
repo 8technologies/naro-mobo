@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_vision/flutter_vision.dart';
 import 'package:flutx/flutx.dart';
 import 'package:get/get.dart';
 import 'package:marcci/theme/app_theme.dart';
@@ -82,7 +81,8 @@ class _AIHomeScreenState extends State<AIHomeScreen> {
                     'Detect pests, diseases, and leaf spots on your crops.',
               ),
                 onTap: () {
-                  Get.to(() => LeafSpotDetectionScreen(model: 'assets/aimodel/leafspot_identifier_model.tflite', label: 'assets/aimodel/labels_leafspot.txt', isDisease: true,));
+                  Utils.toast2("Coming soon!");
+                  //Get.to(() => LeafSpotDetectionScreen(model: 'assets/aimodel/leafspot_identifier_model.tflite', label: 'assets/aimodel/labels_leafspot.txt', isDisease: true,));
                 }
             ),
             FeatureItem(

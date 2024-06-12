@@ -1,0 +1,9 @@
+PASSWORD: dev@team2
+Alias: upload
+First and Last Name: Muhindo Mubaraka
+Unit: Developer
+Organization: 8Tech
+City: Kampala
+State: Kampala
+Country Code: UG
+
