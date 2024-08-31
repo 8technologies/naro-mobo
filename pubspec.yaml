@@ -2,7 +2,7 @@ name: marcci
 description: NARO research Project
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-version: 1.0.0+1
+version: 1.0.0+3
 
 environment:
   sdk: '>=3.0.6 <4.0.0'
@@ -10,8 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
- 
-  flutx:
+
+  flutx: ^0.2.0-rc.2
   connectivity_plus: ^3.0.2
   dio: ^5.1.2
 

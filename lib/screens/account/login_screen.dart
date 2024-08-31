@@ -11,7 +11,6 @@ import '../../../utils/Utils.dart';
 import '../../models/LoggedInUserModel.dart';
 import '../../models/RespondModel.dart';
 import '../../theme/custom_theme.dart';
-import '../OnBoardingScreen.dart';
 import '../full_app/full_app.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -109,7 +108,6 @@ class LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    is_loading = false;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,

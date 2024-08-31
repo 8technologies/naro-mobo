@@ -20,7 +20,10 @@ class AppConfig {
   static const String DATABASE_PATH = "NARO_GROUND_NUTS_$APP_VERSION";
 
   // static const String MAIN_SITE_URL = "https://app.narogroundnut.org";
+  static const String MAIN_SITE_URL = "https://app.narogroundnut.org";
+/*
   static const String MAIN_SITE_URL = "http://10.0.2.2:8000/marcci-dashboard";
+*/
 
   /*static const String MAIN_SITE_URL = "http://app.narogroundnut.org";*/
   static const String STORAGE_URL = "$MAIN_SITE_URL/storage/";

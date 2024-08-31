@@ -97,7 +97,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                             ),
                             Expanded(
                                 child: menuItemWidget(
-                              'Fiance',
+                              'Finance',
                               'Manage your income and expenses.',
                               'finance.png',
                               () {

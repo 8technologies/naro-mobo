@@ -7,9 +7,7 @@ import 'package:marcci/models/LoggedInUserModel.dart';
 import 'package:marcci/screens/full_app/section/AccountSection.dart';
 import 'package:marcci/screens/gardens/GardenActivityCreateScreen.dart';
 import 'package:marcci/screens/gardens/GardenCreateScreen.dart';
-import 'package:marcci/screens/gardens/MyActivitiesCalender.dart';
 import 'package:marcci/screens/gardens/MyActivitiesList.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../controllers/full_app_controller.dart';
 import '../../models/FarmerOfflineModel.dart';
@@ -222,7 +220,7 @@ class _FullAppState extends State<FullApp> with SingleTickerProviderStateMixin {
                                 color: Colors.white,
                               ),
                               FxText.titleLarge(
-                                "Muhindo Mubaraka",
+                                "${mainController.loggedInUserModel.name}",
                                 fontWeight: 600,
                                 fontSize: 35,
                                 height: 1,

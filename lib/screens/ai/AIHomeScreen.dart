@@ -94,8 +94,8 @@ class _AIHomeScreenState extends State<AIHomeScreen> {
                         isDisease: true,
                       ));
                 }),
-            SizedBox(height: 16.0),
-            FxContainer(
+            true?SizedBox():            SizedBox(height: 16.0),
+            true?SizedBox():  FxContainer(
               child: FeatureItem(
                 icon: 'ai_prediction_1.jpeg',
                 title: 'AI Chatbot',
@@ -106,8 +106,8 @@ class _AIHomeScreenState extends State<AIHomeScreen> {
                 Get.to(() => AIChatbotScreen());
               },
             ),
-            SizedBox(height: 16.0),
-            FxContainer(
+            true?SizedBox():SizedBox(height: 16.0),
+            true?SizedBox():FxContainer(
               child: FeatureItem(
                 icon: "ai_prediction_1.jpeg",
                 title: 'Yield Prediction',
@@ -115,6 +115,7 @@ class _AIHomeScreenState extends State<AIHomeScreen> {
               ),
             ),
             SizedBox(height: 16.0),
+            true?SizedBox():
             FxButton.block(
               onPressed: () async {
                 Utils.toast('Registering for notification...');

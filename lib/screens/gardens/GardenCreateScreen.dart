@@ -65,6 +65,13 @@ class _GardenCreateScreenState extends State<GardenCreateScreen> {
     bool announceChanges= false,
     bool askReset=  false,
   }) async {
+
+    //check if photo is selected
+    if (local_image_path.isEmpty) {
+      Utils.toast("Please first select a photo of the garden.");
+      return;
+    }
+
     if (!_formKey.currentState!.validate()) {
       Utils.toast("Please first fix errors.");
       return;
