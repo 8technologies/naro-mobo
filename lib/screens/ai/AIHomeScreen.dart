@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_vision/flutter_vision.dart';
 import 'package:flutx/flutx.dart';
 import 'package:get/get.dart';
-import 'package:marcci/screens/ai/chatbot_e_extension/AIChatBotScreen.dart';
+import 'package:marcci/screens/ai/chatbot_e_extension/ConversationListScreen.dart';
 import 'package:marcci/theme/app_theme.dart';
 import 'package:marcci/utils/Utils.dart';
 
@@ -94,8 +94,8 @@ class _AIHomeScreenState extends State<AIHomeScreen> {
                         isDisease: true,
                       ));
                 }),
-            true?SizedBox():            SizedBox(height: 16.0),
-            true?SizedBox():  FxContainer(
+            SizedBox(height: 16.0),
+            FxContainer(
               child: FeatureItem(
                 icon: 'ai_prediction_1.jpeg',
                 title: 'AI Chatbot',
@@ -103,35 +103,41 @@ class _AIHomeScreenState extends State<AIHomeScreen> {
                     '24/7 Instant support for all your farming queries.',
               ),
               onTap: () {
-                Get.to(() => AIChatbotScreen());
+                Get.to(() => const ConversationListScreen(
+                      userId: 26,
+                    ));
               },
             ),
-            true?SizedBox():SizedBox(height: 16.0),
-            true?SizedBox():FxContainer(
-              child: FeatureItem(
-                icon: "ai_prediction_1.jpeg",
-                title: 'Yield Prediction',
-                description: 'AI-driven yield prediction for better planning.',
-              ),
-            ),
+            true ? SizedBox() : SizedBox(height: 16.0),
+            true
+                ? SizedBox()
+                : FxContainer(
+                    child: FeatureItem(
+                      icon: "ai_prediction_1.jpeg",
+                      title: 'Yield Prediction',
+                      description:
+                          'AI-driven yield prediction for better planning.',
+                    ),
+                  ),
             SizedBox(height: 16.0),
-            true?SizedBox():
-            FxButton.block(
-              onPressed: () async {
-                Utils.toast('Registering for notification...');
-                Utils.showLoader(false);
-                await Future.delayed(Duration(seconds: 4));
-                Utils.toast('Registration successful!');
-                Utils.hideLoader();
-                Get.back();
-              },
-              child: FxText.titleLarge(
-                'Notify Me When Available',
-                color: Colors.white,
-                fontWeight: 800,
-              ),
-              backgroundColor: CustomTheme.primary,
-            ),
+            true
+                ? SizedBox()
+                : FxButton.block(
+                    onPressed: () async {
+                      Utils.toast('Registering for notification...');
+                      Utils.showLoader(false);
+                      await Future.delayed(Duration(seconds: 4));
+                      Utils.toast('Registration successful!');
+                      Utils.hideLoader();
+                      Get.back();
+                    },
+                    child: FxText.titleLarge(
+                      'Notify Me When Available',
+                      color: Colors.white,
+                      fontWeight: 800,
+                    ),
+                    backgroundColor: CustomTheme.primary,
+                  ),
           ],
         ),
       ),
