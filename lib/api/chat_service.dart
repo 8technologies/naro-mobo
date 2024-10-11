@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:marcci/models/chat_bot/ConversationModel.dart';
+import 'package:marcci/models/chat_bot/MessageModel.dart';
 import 'package:marcci/utils/AppConfig.dart';
 
 class ChatService {
@@ -48,24 +49,37 @@ class ChatService {
   }
 
   // Send a message in an existing conversation
-  Future<void> sendMessage(int conversationId, String message) async {
+  Future<Message> sendMessage(
+      int conversationId, String message, int userId) async {
     final url = Uri.parse('$apiUrl/conversations/$conversationId/send');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'message': message,
+        'user_id': userId, // Include the user_id in the request body
       }),
     );
 
-    if (response.statusCode != 200) {
+    // print("Sent Message " + response.body);
+
+    if (response.statusCode == 200) {
+      // Parse the response body
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      final messageData = data['data'];
+
+      // Return the newly created message object
+      return Message.fromJson(messageData);
+    } else {
       throw Exception('Failed to send message: ${response.body}');
     }
   }
 
   // Poll for conversation response
-  Future<Conversation> getChatResponse(int conversationId) async {
-    final url = Uri.parse('$apiUrl/conversations/$conversationId/response');
+  Future<Conversation> getChatResponse(int conversationId, int userId) async {
+    // Add userId as a query parameter to the URL
+    final url = Uri.parse(
+        '$apiUrl/conversations/$conversationId/response?user_id=$userId');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
