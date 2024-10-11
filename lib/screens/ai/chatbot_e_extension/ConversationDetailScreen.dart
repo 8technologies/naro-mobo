@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:marcci/api/chat_service.dart';
+import 'package:marcci/controllers/MainController.dart';
+import 'package:marcci/models/LoggedInUserModel.dart';
 import 'package:marcci/models/chat_bot/ConversationModel.dart';
+import 'dart:developer';
+import 'package:get/get.dart';
 
 class ConversationDetailScreen extends StatefulWidget {
   final int conversationId;
@@ -18,6 +22,7 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
   late Future<Conversation> _conversationFuture;
   final ChatService _apiService = ChatService();
   Conversation? _conversation;
+  final MainController mainController = Get.put(MainController());
 
   @override
   void initState() {
@@ -33,11 +38,12 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
 
   Future<Conversation> _fetchConversation() async {
     try {
-      final conversation =
-          await _apiService.getChatResponse(widget.conversationId);
+      final conversation = await _apiService.getChatResponse(
+          widget.conversationId, mainController.loggedInUserModel.id);
       setState(() {
         _conversation = conversation;
       });
+      log('Fetched conversation: $conversation');
       return conversation;
     } catch (e) {
       if (e.toString().contains('Processing')) {
@@ -62,8 +68,8 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
     });
 
     try {
-      await _apiService.sendMessage(
-          widget.conversationId, _messageController.text.trim());
+      await _apiService.sendMessage(widget.conversationId,
+          _messageController.text.trim(), mainController.loggedInUserModel.id);
       _messageController.clear();
       _loadConversation(); // Refresh the conversation
     } catch (e) {
@@ -80,8 +86,8 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
   Future<void> _pollForResponse() async {
     while (_conversation != null && _conversation!.status == 'open') {
       try {
-        final updatedConversation =
-            await _apiService.getChatResponse(widget.conversationId);
+        final updatedConversation = await _apiService.getChatResponse(
+            widget.conversationId, mainController.loggedInUserModel.id);
         setState(() {
           _conversation = updatedConversation;
         });
@@ -112,17 +118,26 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
                     _conversation == null) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
+                  if (snapshot.error.toString().contains("SocketException")) {
+                    return Center(
+                        child: Text(
+                            'Network error. Please check your connection.'));
+                  } else {
+                    return Center(child: Text('Error: ${snapshot}'));
+                  }
+                  // return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (_conversation == null ||
                     _conversation!.messages.isEmpty) {
                   return const Center(child: Text('No messages yet'));
                 } else {
                   final messages = _conversation!.messages;
+                  log('Messages: $messages');
                   return ListView.builder(
                     reverse: true,
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
                       final message = messages[messages.length - 1 - index];
+                      log('Message at index $index: $message');
                       final isFarmer = message.sender == 'farmer';
                       return Align(
                         alignment: isFarmer
@@ -212,5 +227,10 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
   void dispose() {
     _messageController.dispose();
     super.dispose();
+  }
+
+  Future<int> getLoggedInUserId() async {
+    LoggedInUserModel loggedInUser = await LoggedInUserModel.getLoggedInUser();
+    return loggedInUser.id;
   }
 }
