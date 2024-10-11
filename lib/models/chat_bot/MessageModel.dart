@@ -31,6 +31,11 @@ class Message {
       createdAt: DateTime.parse(json['created_at']),
     );
   }
+
+  @override
+  String toString() {
+    return 'Message(id: $id, sender: $sender, message: "$message", respondedBy: $respondedBy, createdAt: $createdAt)';
+  }
 }
 
 class Expert {
