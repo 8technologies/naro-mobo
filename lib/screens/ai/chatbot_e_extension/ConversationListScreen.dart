@@ -4,6 +4,7 @@ import 'package:marcci/models/chat_bot/ConversationModel.dart';
 import 'package:marcci/screens/ai/chatbot_e_extension/ConversationDetailScreen.dart';
 import 'package:marcci/screens/ai/chatbot_e_extension/NewConversationScreen.dart';
 import 'package:marcci/theme/app_theme.dart';
+import 'dart:developer';
 
 class ConversationListScreen extends StatefulWidget {
   final int userId;
@@ -78,6 +79,12 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
             return const Center(child: Text('No conversations yet'));
           } else {
             final conversations = snapshot.data!;
+
+            // Sort conversations by the updated_at field in descending order (latest first)
+            conversations.sort((a, b) {
+              return b.updatedAt.compareTo(a.updatedAt);
+            });
+
             return RefreshIndicator(
               onRefresh: _refreshConversations,
               child: ListView.builder(
@@ -90,7 +97,11 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
 
                   return ListTile(
                     title: Text('Conversation ${conversation.id}'),
-                    subtitle: Text(lastMessage),
+                    subtitle: Text(
+                      lastMessage.length > 100
+                          ? '${lastMessage.substring(0, 100)} ...'
+                          : lastMessage,
+                    ),
                     trailing: Text(conversation.status),
                     onTap: () {
                       Navigator.push(
