@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_vision/flutter_vision.dart';
 import 'package:flutx/flutx.dart';
 import 'package:get/get.dart';
+import 'package:marcci/controllers/MainController.dart';
 import 'package:marcci/screens/ai/chatbot_e_extension/ConversationListScreen.dart';
 import 'package:marcci/theme/app_theme.dart';
 import 'package:marcci/utils/Utils.dart';
@@ -14,6 +15,8 @@ class AIHomeScreen extends StatefulWidget {
 }
 
 class _AIHomeScreenState extends State<AIHomeScreen> {
+  final MainController mainController = Get.put(MainController());
+
   @override
   void initState() {
     super.initState();
@@ -103,9 +106,8 @@ class _AIHomeScreenState extends State<AIHomeScreen> {
                     '24/7 Instant support for all your farming queries.',
               ),
               onTap: () {
-                Get.to(() => const ConversationListScreen(
-                      userId: 26,
-                    ));
+                Get.to(() => ConversationListScreen(
+                    userId: mainController.loggedInUserModel.id));
               },
             ),
             true ? SizedBox() : SizedBox(height: 16.0),
