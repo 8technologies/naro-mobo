@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutx/flutx.dart';
 import 'package:marcci/api/chat_service.dart';
 import 'package:marcci/models/chat_bot/ConversationModel.dart';
 import 'package:marcci/screens/ai/chatbot_e_extension/ConversationDetailScreen.dart';
@@ -59,11 +60,22 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Conversations'),
+        backgroundColor: CustomTheme.primary,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FxText.titleLarge(
+              "Ask NARO AI Chatbot",
+              fontWeight: 800,
+              color: Colors.white,
+              height: 1.0,
+            ),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            color: CustomTheme.primary,
+            color: Colors.white,
             onPressed: _navigateToNewConversation,
           ),
         ],
