@@ -113,7 +113,12 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             FxText.titleLarge(
-              "Conversation ${widget.conversationId}",
+              _conversation != null && _conversation!.messages.isNotEmpty
+                  ? _conversation!.messages.first.message
+                      .split(' ')
+                      .take(5)
+                      .join(' ')
+                  : "Conversation ${widget.conversationId}",
               fontWeight: 800,
               color: Colors.white,
               height: 1.0,
@@ -219,8 +224,9 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
                               vertical: 2, horizontal: 8),
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color:
-                                isFarmer ? Colors.blueAccent : Colors.grey[300],
+                            color: isFarmer
+                                ? CustomTheme.primary
+                                : Colors.grey[300],
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Column(
@@ -229,10 +235,12 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
                                 : CrossAxisAlignment.start,
                             children: [
                               Text(
-                                message.message, // Ensure message is a String
+                                message.message,
                                 style: TextStyle(
                                   color: isFarmer ? Colors.white : Colors.black,
                                 ),
+                                maxLines:
+                                    null, // Allow text to span multiple lines
                               ),
                               if (message.respondedBy != null &&
                                   message.respondedBy == 'expert')
