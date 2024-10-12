@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutx/flutx.dart';
 import 'package:marcci/api/chat_service.dart';
 import 'package:marcci/controllers/MainController.dart';
 import 'package:marcci/models/LoggedInUserModel.dart';
 import 'package:marcci/models/chat_bot/ConversationModel.dart';
 import 'dart:developer';
 import 'package:get/get.dart';
+import 'package:marcci/theme/custom_theme.dart';
 
 class ConversationDetailScreen extends StatefulWidget {
   final int conversationId;
@@ -106,10 +108,79 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Conversation ${widget.conversationId}'),
+        backgroundColor: CustomTheme.primary,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FxText.titleLarge(
+              "Conversation ${widget.conversationId}",
+              fontWeight: 800,
+              color: Colors.white,
+              height: 1.0,
+            ),
+          ],
+        ),
       ),
       body: Column(
         children: [
+          Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Color(0xFFE3E3E3),
+                  width: 1.0,
+                ),
+              ),
+              child: Row(mainAxisSize: MainAxisSize.max, children: [
+                Padding(
+                  padding:
+                      EdgeInsetsDirectional.fromSTEB(42.0, 28.0, 0.0, 28.0),
+                  child: Container(
+                    width: 48.0,
+                    height: 48.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Color(0xFF10793D),
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.wechat_outlined,
+                      color: Color(0xFF10793D),
+                      size: 24.0,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsetsDirectional.fromSTEB(32.0, 0.0, 0.0, 0.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'NARO AI Chatbot',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              fontFamily: 'Inter',
+                              color: Color(0xFF454B58),
+                              fontSize: 20.0,
+                              letterSpacing: 0.0,
+                            ),
+                      ),
+                      Text(
+                        'Your groundnut questions answered!',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              fontFamily: 'Inter',
+                              color: Color(0xFF667085),
+                              fontSize: 14.0,
+                              letterSpacing: 0.0,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+              ])),
           Expanded(
             child: FutureBuilder<Conversation>(
               future: _conversationFuture,
@@ -187,6 +258,7 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
               },
             ),
           ),
+          const SizedBox(height: 12),
           const Divider(height: 1),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -195,9 +267,26 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
                 Expanded(
                   child: TextField(
                     controller: _messageController,
-                    decoration: const InputDecoration(
-                      labelText: 'Ask another question...',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      hintText: 'Ask another question...',
+                      hintStyle: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 16,
+                        fontFamily: 'Inter',
+                        letterSpacing: 0.5,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: CustomTheme.primary
+                          .withOpacity(0.1), // Subtle greenish color
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      prefixIcon:
+                          Icon(Icons.chat_bubble_outline, color: Colors.grey),
                     ),
                   ),
                 ),
@@ -205,7 +294,7 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
                 _isLoading
                     ? const CircularProgressIndicator()
                     : IconButton(
-                        icon: const Icon(Icons.send),
+                        icon: const Icon(Icons.send, color: Colors.grey),
                         onPressed: _sendMessage,
                       ),
               ],
