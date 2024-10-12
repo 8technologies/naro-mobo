@@ -108,7 +108,14 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
                       : 'No messages yet';
 
                   return ListTile(
-                    title: Text('Conversation ${conversation.id}'),
+                    title: Text(
+                      conversation.messages.isNotEmpty
+                          ? conversation.messages.first.message
+                              .split(' ')
+                              .take(5)
+                              .join(' ')
+                          : 'Conversation ${conversation.id}',
+                    ),
                     subtitle: Text(
                       lastMessage.length > 100
                           ? '${lastMessage.substring(0, 100)} ...'
