@@ -5,7 +5,6 @@ import 'package:marcci/models/chat_bot/ConversationModel.dart';
 import 'package:marcci/screens/ai/chatbot_e_extension/ConversationDetailScreen.dart';
 import 'package:marcci/screens/ai/chatbot_e_extension/NewConversationScreen.dart';
 import 'package:marcci/theme/app_theme.dart';
-import 'dart:developer';
 
 class ConversationListScreen extends StatefulWidget {
   final int userId;
@@ -88,7 +87,58 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No conversations yet'));
+            return Padding(
+              padding: const EdgeInsets.only(
+                  top: 36.0, left: 8.0, right: 8.0, bottom: 8.0),
+              child: Card(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    CircleAvatar(
+                      radius: 30,
+                      child: Icon(Icons.chat, size: 30),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        'Hello! Nice to see you here! By pressing the "Ask question" button below, you can start a conversation.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24.0, vertical: 18),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                CustomTheme.primary, // Set button color
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(10), // Set radius
+                            ),
+                          ),
+                          onPressed: _navigateToNewConversation,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 15.0, horizontal: 10.0),
+                            child: Text(
+                              'Ask question',
+                              style: TextStyle(
+                                fontSize: 16, // Set text size
+                                color: Colors.white, // Set text color
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
           } else {
             final conversations = snapshot.data!;
 
