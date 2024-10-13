@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:marcci/models/chat_bot/ConversationModel.dart';
@@ -51,19 +53,19 @@ class ChatService {
   // Send a message in an existing conversation
   Future<Message> sendMessage(
       int conversationId, String message, int userId) async {
-    final url = Uri.parse('$apiUrl/conversations/$conversationId/send');
+    final url = Uri.parse('$apiUrl/conversations/send');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'message': message,
-        'user_id': userId, // Include the user_id in the request body
+        'user_id': userId,
+        'conversation_id':
+            conversationId // Include the user_id in the request body
       }),
     );
 
-    // print("Sent Message " + response.body);
-
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       // Parse the response body
       final Map<String, dynamic> data = jsonDecode(response.body);
       final messageData = data['data'];
