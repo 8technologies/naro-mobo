@@ -29,17 +29,12 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _loadConversation();
-  }
-
-  void _loadConversation() {
-    setState(() {
-      _conversationFuture = _fetchConversation();
-    });
+    _conversationFuture = _fetchConversation();
   }
 
   Future<Conversation> _fetchConversation() async {
     try {
+      log('Fetching conversation for ID: ${widget.conversationId}');
       final conversation = await _apiService.getChatResponse(
           widget.conversationId, mainController.loggedInUserModel.id);
       setState(() {
@@ -48,6 +43,7 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
       log('Fetched conversation: $conversation');
       return conversation;
     } catch (e) {
+      log('Error fetching conversation: $e');
       if (e.toString().contains('Processing')) {
         // Still processing
         return _conversationFuture;
@@ -73,7 +69,7 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
       await _apiService.sendMessage(widget.conversationId,
           _messageController.text.trim(), mainController.loggedInUserModel.id);
       _messageController.clear();
-      _loadConversation(); // Refresh the conversation
+      _conversationFuture = _fetchConversation(); // Refresh the conversation
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
@@ -199,9 +195,8 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
                         child: Text(
                             'Network error. Please check your connection.'));
                   } else {
-                    return Center(child: Text('Error: ${snapshot}'));
+                    return Center(child: Text('Error: ${snapshot.error}'));
                   }
-                  // return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (_conversation == null ||
                     _conversation!.messages.isEmpty) {
                   return const Center(child: Text('No messages yet'));
