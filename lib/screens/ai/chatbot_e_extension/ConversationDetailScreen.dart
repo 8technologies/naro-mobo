@@ -34,16 +34,16 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
 
   Future<Conversation> _fetchConversation() async {
     try {
-      log('Fetching conversation for ID: ${widget.conversationId}');
+      // log('Fetching conversation for ID: ${widget.conversationId}');
       final conversation = await _apiService.getChatResponse(
           widget.conversationId, mainController.loggedInUserModel.id);
       setState(() {
         _conversation = conversation;
       });
-      log('Fetched conversation: $conversation');
+      // log('Fetched conversation: $conversation');
       return conversation;
     } catch (e) {
-      log('Error fetching conversation: $e');
+      // log('Error fetching conversation: $e');
       if (e.toString().contains('Processing')) {
         // Still processing
         return _conversationFuture;
@@ -202,13 +202,13 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
                   return const Center(child: Text('No messages yet'));
                 } else {
                   final messages = _conversation!.messages;
-                  log('Messages: $messages');
+                  // log('Messages: $messages');
                   return ListView.builder(
                     reverse: true,
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
                       final message = messages[messages.length - 1 - index];
-                      log('Message at index $index: $message');
+                      // log('Message at index $index: $message');
                       final isFarmer = message.sender == 'farmer';
                       return Align(
                         alignment: isFarmer
