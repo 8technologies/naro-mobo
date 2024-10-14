@@ -6,6 +6,7 @@ import 'package:marcci/models/LoggedInUserModel.dart';
 import 'package:marcci/models/chat_bot/ConversationModel.dart';
 import 'dart:developer';
 import 'package:get/get.dart';
+import 'package:marcci/models/chat_bot/MessageModel.dart';
 import 'package:marcci/theme/custom_theme.dart';
 
 class ConversationDetailScreen extends StatefulWidget {
@@ -53,6 +54,34 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
     }
   }
 
+  // Future<void> _sendMessage() async {
+  //   if (_messageController.text.trim().isEmpty) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Please enter a message')),
+  //     );
+  //     return;
+  //   }
+
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
+
+  //   try {
+  //     await _apiService.sendMessage(widget.conversationId,
+  //         _messageController.text.trim(), mainController.loggedInUserModel.id);
+  //     _messageController.clear();
+  //     _conversationFuture = _fetchConversation(); // Refresh the conversation
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Error: ${e.toString()}')),
+  //     );
+  //   } finally {
+  //     setState(() {
+  //       _isLoading = false;
+  //     });
+  //   }
+  // }
+
   Future<void> _sendMessage() async {
     if (_messageController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -63,13 +92,29 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
 
     setState(() {
       _isLoading = true;
+
+      // Add a temporary placeholder message for AI processing
+      _conversation?.messages.add(Message(
+        id: DateTime.now().millisecondsSinceEpoch, // Temporary ID
+        sender: 'system',
+        message: 'AI is processing your question...',
+        messageType: 'text',
+        respondedBy: 'system',
+        expert: null,
+        createdAt: DateTime.now(),
+      ));
     });
 
     try {
       await _apiService.sendMessage(widget.conversationId,
           _messageController.text.trim(), mainController.loggedInUserModel.id);
       _messageController.clear();
+
+      // Poll for the updated conversation, which includes the AI response
       _conversationFuture = _fetchConversation(); // Refresh the conversation
+
+      // Start polling for AI response
+      _pollForResponse();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
@@ -81,14 +126,41 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
     }
   }
 
+  // Future<void> _pollForResponse() async {
+  //   while (_conversation != null && _conversation!.status == 'open') {
+  //     try {
+  //       final updatedConversation = await _apiService.getChatResponse(
+  //           widget.conversationId, mainController.loggedInUserModel.id);
+  //       setState(() {
+  //         _conversation = updatedConversation;
+  //       });
+  //       if (updatedConversation.status == 'closed') break;
+  //     } catch (e) {
+  //       if (!e.toString().contains('Processing')) {
+  //         // Handle other errors
+  //         break;
+  //       }
+  //     }
+  //     await Future.delayed(const Duration(seconds: 5));
+  //   }
+  // }
+
   Future<void> _pollForResponse() async {
     while (_conversation != null && _conversation!.status == 'open') {
       try {
         final updatedConversation = await _apiService.getChatResponse(
             widget.conversationId, mainController.loggedInUserModel.id);
+
         setState(() {
           _conversation = updatedConversation;
+
+          // Remove the "AI is processing..." placeholder if response is received
+          if (_conversation!.status == 'closed') {
+            _conversation?.messages.removeWhere((message) =>
+                message.message == 'AI is processing your question...');
+          }
         });
+
         if (updatedConversation.status == 'closed') break;
       } catch (e) {
         if (!e.toString().contains('Processing')) {
@@ -202,6 +274,7 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
                   return const Center(child: Text('No messages yet'));
                 } else {
                   final messages = _conversation!.messages;
+
                   // log('Messages: $messages');
                   return ListView.builder(
                     reverse: true,
@@ -209,19 +282,26 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
                     itemBuilder: (context, index) {
                       final message = messages[messages.length - 1 - index];
                       // log('Message at index $index: $message');
+                      final isSystem = message.sender == 'system';
                       final isFarmer = message.sender == 'farmer';
+
                       return Align(
-                        alignment: isFarmer
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
+                        alignment: isSystem
+                            ? Alignment.center
+                            : (isFarmer
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft),
                         child: Container(
                           margin: const EdgeInsets.symmetric(
                               vertical: 2, horizontal: 8),
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: isFarmer
-                                ? CustomTheme.primary
-                                : Colors.grey[300],
+                            color: isSystem
+                                ? Colors
+                                    .orange[300] // Placeholder for processing
+                                : (isFarmer
+                                    ? CustomTheme.primary
+                                    : Colors.grey[300]), // Farmer vs AI
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Column(
@@ -232,10 +312,13 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
                               Text(
                                 message.message,
                                 style: TextStyle(
-                                  color: isFarmer ? Colors.white : Colors.black,
+                                  color: isSystem
+                                      ? Colors.white
+                                      : (isFarmer
+                                          ? Colors.white
+                                          : Colors.black),
                                 ),
-                                maxLines:
-                                    null, // Allow text to span multiple lines
+                                maxLines: null,
                               ),
                               if (message.respondedBy != null &&
                                   message.respondedBy == 'expert')
@@ -255,6 +338,52 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
                           ),
                         ),
                       );
+
+                      // return Align(
+                      //   alignment: isFarmer
+                      //       ? Alignment.centerRight
+                      //       : Alignment.centerLeft,
+                      //   child: Container(
+                      //     margin: const EdgeInsets.symmetric(
+                      //         vertical: 2, horizontal: 8),
+                      //     padding: const EdgeInsets.all(10),
+                      //     decoration: BoxDecoration(
+                      //       color: isFarmer
+                      //           ? CustomTheme.primary
+                      //           : Colors.grey[300],
+                      //       borderRadius: BorderRadius.circular(8),
+                      //     ),
+                      //     child: Column(
+                      //       crossAxisAlignment: isFarmer
+                      //           ? CrossAxisAlignment.end
+                      //           : CrossAxisAlignment.start,
+                      //       children: [
+                      //         Text(
+                      //           message.message,
+                      //           style: TextStyle(
+                      //             color: isFarmer ? Colors.white : Colors.black,
+                      //           ),
+                      //           maxLines:
+                      //               null, // Allow text to span multiple lines
+                      //         ),
+                      //         if (message.respondedBy != null &&
+                      //             message.respondedBy == 'expert')
+                      //           Padding(
+                      //             padding: const EdgeInsets.only(top: 4.0),
+                      //             child: Text(
+                      //               'Expert: ${message.expert?.name ?? 'Unknown'}',
+                      //               style: TextStyle(
+                      //                 color: isFarmer
+                      //                     ? Colors.white70
+                      //                     : Colors.black54,
+                      //                 fontSize: 10,
+                      //               ),
+                      //             ),
+                      //           ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // );
                     },
                   );
                 }
