@@ -364,15 +364,112 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> with 
                               ],
                             ),
                           ),
-                          Center(
-                            child: isDisease!?Text("Disease overview shall appear here"):Text("Variety Overview shall appear here"),
-                          ),
-                          Center(
-                            child: isDisease!?Text("Disease causes shall appear here"):Text("Variety benefits shall appear here"),
-                          ),
-                          Center(
-                            child: isDisease!?Text("Disease prevention and cure shall appear here"): Text("Other information about variety shall appear here"),
-                          )
+                              Center(
+                          child: isDisease!
+                              ? Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          'Early and late leaf spots',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Times New Roman'
+                                          ),
+                                        ),
+                                        SizedBox(height: 10),
+                                        Text(
+                                          'Early leaf spot (Cercospora. arachidicola) and late leaf spot (Phaeoisariopsis personatum) are the most damaging diseases of groundnuts worldwide. Besides adversely affecting the yield and quality of pod, they also affect the yield and quality of haulm. Although just one leaf spot pathogen usually predominates in a production region, both leaf spot species are generally found in a single field. Shifts in leaf spot species also have been observed over a period of years.\n\n'
+                                          'Early leaf spot (Cercospora arachidicola Hori) develops small necrotic flecks, that usually have light to dark-brown centers, and a yellow halo. The spots may range from 1 mm - 10 mm in diameter. Sporulation is on the adaxial (upper) surface of leaflets.\n\n'
+                                          'Late leaf spot (Phaeoisariopsis personata (Berk & Curt) develops small necrotic flecks that enlarge and become light to dark brown. The yellow halo is either absent or less conspicuous in late leaf spot. Sporulation is common on the abaxial (lower) surface of leaves. Farmers confuse leafspots with harvest indicators making mitigation measures difficult. The disease(s) maybe expressed on both the leaves and stems and this results in poor crop stand and yields.',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontFamily: 'Times New Roman'
+                                          ),
+                                          textAlign: TextAlign.justify,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : Text("Variety Overview shall appear here"),
+                        ),
+                        Center(
+                          child: isDisease!
+                              ? Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          'Causes of Leaf Spot Disease',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Times New Roman'
+                                          ),
+                                        ),
+                                        SizedBox(height: 10),
+                                        Text(
+                                          '1. Fungal pathogens: Caused primarily by Cercospora arachidicola (early leaf spot) and Phaeoisariopsis personatum (late leaf spot) fungi.\n\n'
+                                          '2. Environmental conditions: Warm temperatures (25-30°C) and high humidity favor fungal growth and spore production.\n\n'
+                                          '3. Poor field sanitation: Infected crop residues left in the field serve as sources of inoculum.\n\n'
+                                          '4. Continuous cropping: Growing groundnuts in the same field year after year increases pathogen buildup.\n\n'
+                                          '5. Rain splash: Helps spread fungal spores from infected plants to healthy ones.\n\n'
+                                          '6. Wind dispersal: Can carry fungal spores over long distances.\n\n'
+                                          '7. Susceptible varieties: Planting non-resistant groundnut varieties increases disease incidence.',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontFamily: 'Times New Roman'
+                                          ),
+                                          textAlign: TextAlign.justify,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : Text("Variety benefits shall appear here"),
+                      ),
+                      Center(
+                        child: isDisease!
+                            ? Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        'Control Measures',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Times New Roman'
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Text(
+                                        'Cultural Control:\n'
+                                        '• Crop rotation has been shown to provide partial control of leaf spots. When groundnut followed either maize or pasture, the disease development was slow and less severe.\n'
+                                        '• Early sowing has been shown to reduce the severity of leafspot diseases. Adjust the date of sowing to avoid conditions favourable for rapid disease development.\n'
+                                        '• Burying all groundnut crop residues by deep plowing will reduce initial inoculum.\n\n'
+                                        'Chemical control:\n'
+                                        '• Multiple applications of a fungicide such as benomyl, captafol, chlorothalonil, copper hydroxide, mancozeb or sulphur fungicides may control early and late leaf spot.\n'
+                                        '• Three sprays of 0.2% chlorothalonil at intervals of 10 - 15 days starting 40 days after germination up to 90 days provides effective control to early and late leaf spots, and rust.\n\n'
+                                        'Host plant resistance:\n'
+                                        '• Grow cultivars tolerant to late leaf spot: Sources of resistance to both early and late leaf spot have been identified in Arachis hypogaea and used to develop breeding lines with resistance e.g. ICGV 87160, ICGV 86590, ICGV-SM 95741, ICGV-SM 95714, Serenut 8R, Serenut 12R and Serenut 14R.',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontFamily: 'Times New Roman'
+                                        ),
+                                        textAlign: TextAlign.justify,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : Text("Other information about variety shall appear here"),
+                      )
                         ],
                       ),
                   ),
