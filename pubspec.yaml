@@ -2,7 +2,7 @@ name: marcci
 description: NARO research Project
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-version: 1.0.0+3
+version: 1.0.0+7
 
 environment:
   sdk: '>=3.0.6 <4.0.0'
@@ -29,7 +29,7 @@ dependencies:
   hive_flutter: ^1.1.0
   feather_icons: ^1.2.0
   flutter_easyloading: ^3.0.5
-  fluttertoast: ^8.0.9
+  fluttertoast: ^8.2.12
 
 #Dependency for ai model
   flutter_vision: ^1.1.4

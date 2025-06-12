@@ -364,6 +364,7 @@ class Utils {
   }
 
   static Future<bool> is_connected() async {
+    return true;
     bool isConnected = false;
     var connectivityResult = await (Connectivity().checkConnectivity());
 

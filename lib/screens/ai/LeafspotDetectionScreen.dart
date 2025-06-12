@@ -355,11 +355,8 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> with 
                                       fontSize: 20,
                                       fontFamily: 'Time New Roman'),
                                 )
-                                :Text("Coming soon",
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontFamily: 'Time New Roman'),
-                                ),
+                                :SizedBox(),
+
                                 const SizedBox(height: 20.0),
                               ],
                             ),
