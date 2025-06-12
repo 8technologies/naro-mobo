@@ -355,24 +355,263 @@ class _LeafSpotDetectionScreenState extends State<LeafSpotDetectionScreen> with 
                                       fontSize: 20,
                                       fontFamily: 'Time New Roman'),
                                 )
-                                :Text("Coming soon",
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontFamily: 'Time New Roman'),
-                                ),
+                                :SizedBox(),
+
                                 const SizedBox(height: 20.0),
                               ],
                             ),
                           ),
+
+                        //  Disease Overview Section
+                                                    
                           Center(
-                            child: isDisease!?Text("Disease overview shall appear here"):Text("Variety Overview shall appear here"),
+                            child: isDisease!
+                                ? Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            'Early and late leaf spots',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'Times New Roman'
+                                            ),
+                                          ),
+                                          SizedBox(height: 10),
+                                          Text(
+                                            'Early leaf spot (Cercospora. arachidicola) and late leaf spot (Phaeoisariopsis personatum) are the most damaging diseases of groundnuts worldwide. Besides adversely affecting the yield and quality of pod, they also affect the yield and quality of haulm.\n\n'
+                                            'Resistant varieties include:\n'
+                                            '- ICGV 87160\n'
+                                            '- ICGV 86590\n'
+                                            '- ICGV-SM 95741\n'
+                                            '- ICGV-SM 95714\n'
+                                            '- Serenut 8R\n'
+                                            '- Serenut 12R\n'
+                                            '- Serenut 14R\n\n'
+                                            'These varieties have shown tolerance to both early and late leaf spot diseases and are recommended for cultivation in affected areas.',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontFamily: 'Times New Roman'
+                                            ),
+                                            textAlign: TextAlign.justify,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                : Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            'Recommended Groundnut Varieties for Uganda',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'Times New Roman'
+                                            ),
+                                          ),
+                                          SizedBox(height: 10),
+                                          Text(
+                                            'Uganda has developed several high-yielding groundnut varieties through the National Groundnut Improvement Programme:\n\n'
+                                            '1. Serenut 1R (Virginia, tan) - 100-110 days maturity, 2500-3700 kg/ha yield\n'
+                                            '2. Serenut 2 (Virginia, red) - 100-110 days, 2500-3700 kg/ha\n'
+                                            '3. Serenut 3R (Spanish, red) - 90-100 days, 2500-2900 kg/ha\n'
+                                            '4. Serenut 4T (Spanish, tan) - 90-100 days, 2500-2900 kg/ha\n'
+                                            '5. Serenut 5R (Virginia, red) - 100-110 days, 2500-3000 kg/ha\n'
+                                            '6. Serenut 6T (Spanish, tan) - 90-100 days, 2500-3000 kg/ha\n'
+                                            '7. Serenut 7T (Virginia, tan) - 100-110 days, 2500-3700 kg/ha\n'
+                                            '8. Serenut 8R (Virginia, red) - 100-110 days, 2500-3700 kg/ha\n'
+                                            '9. Serenut 9T (Virginia, tan) - 100-110 days, 2500-3700 kg/ha\n'
+                                            '10. Serenut 10R (Virginia, red) - 100-110 days, 2500-3700 kg/ha\n'
+                                            '11. Serenut 11T (Virginia, tan) - 100-110 days, 2500-3700 kg/ha\n'
+                                            '12. Serenut 12R (Virginia, red) - 100-110 days, 2500-3700 kg/ha\n'
+                                            '13. Serenut 13T (Virginia, tan) - 100-110 days, 2500-3700 kg/ha\n'
+                                            '14. Serenut 14R (Virginia, red) - 100-110 days, 2500-3700 kg/ha\n\n'
+                                            'These varieties are suitable for different market uses including confectionery, butter, oil, and flour production.',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontFamily: 'Times New Roman'
+                                            ),
+                                            textAlign: TextAlign.justify,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                           ),
-                          Center(
-                            child: isDisease!?Text("Disease causes shall appear here"):Text("Variety benefits shall appear here"),
-                          ),
-                          Center(
-                            child: isDisease!?Text("Disease prevention and cure shall appear here"): Text("Other information about variety shall appear here"),
+
+
+                  // Disease Causes Section
+
+                      Center(
+                        child: isDisease!
+                            ? Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        'Causes of Leaf Spot Disease',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Times New Roman'
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Text(
+                                        '1. Fungal pathogens: Caused primarily by Cercospora arachidicola (early leaf spot) and Phaeoisariopsis personatum (late leaf spot) fungi.\n\n'
+                                        '2. Environmental conditions: Warm temperatures (25-30°C) and high humidity favor fungal growth and spore production.\n\n'
+                                        '3. Continuous cropping: Growing groundnuts in the same field year after year increases pathogen buildup.\n\n'
+                                        '4. Poor field sanitation: Infected crop residues left in the field serve as sources of inoculum.\n\n'
+                                        '5. Susceptible varieties: Planting non-resistant groundnut varieties increases disease incidence.\n\n'
+                                        '6. Rain splash: Helps spread fungal spores from infected plants to healthy ones.\n\n'
+                                        '7. Wind dispersal: Can carry fungal spores over long distances.',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontFamily: 'Times New Roman'
+                                        ),
+                                        textAlign: TextAlign.justify,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        'Benefits of Improved Groundnut Varieties',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Times New Roman'
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Text(
+                                        'The improved groundnut varieties offer several benefits:\n\n'
+                                        '1. High yields: Most varieties yield between 2500-3700 kg/ha compared to traditional varieties\n'
+                                        '2. Disease resistance: Many varieties are resistant to major diseases like rosette and leaf spots\n'
+                                        '3. Drought tolerance: Varieties like Serenut 8R have "stay-green" traits for drought tolerance\n'
+                                        '4. Early maturity: Some varieties mature in 90-100 days enabling double cropping\n'
+                                        '5. Market preferences: Available in different colors (red, tan) to suit regional preferences\n'
+                                        '6. Multiple uses: Suitable for confectionery, oil extraction, butter, and flour production\n'
+                                        '7. Improved quality: Higher oil content and better nutritional value\n'
+                                        '8. Adaptability: Suitable for different agro-ecological zones in Uganda',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontFamily: 'Times New Roman'
+                                        ),
+                                        textAlign: TextAlign.justify,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                      ),
+
+
+             // Disease Prevention & Cure Section
+
+                  Center(
+                    child: isDisease!
+                        ? Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Control Measures for Leaf Spot',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Times New Roman'
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    'Cultural Control:\n'
+                                    '• Crop rotation with cereals or pasture reduces disease incidence\n'
+                                    '• Early sowing helps avoid peak disease periods\n'
+                                    '• Deep plowing to bury crop residues reduces initial inoculum\n\n'
+                                    'Chemical Control:\n'
+                                    '• Three sprays of 0.2% chlorothalonil at 10-15 day intervals starting 40 days after germination\n'
+                                    '• Carbendazim (0.05%) is effective against both leaf spots\n'
+                                    '• Fungicides like benomyl, captafol, copper hydroxide, mancozeb or sulphur can be used\n\n'
+                                    'Host Plant Resistance:\n'
+                                    '• Grow resistant varieties like:\n'
+                                    '  - ICGV 87160\n'
+                                    '  - ICGV 86590\n'
+                                    '  - ICGV-SM 95741\n'
+                                    '  - ICGV-SM 95714\n'
+                                    '  - Serenut 8R\n'
+                                    '  - Serenut 12R\n'
+                                    '  - Serenut 14R\n\n'
+                                    'These varieties have shown good tolerance to leaf spot diseases.',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: 'Times New Roman'
+                                    ),
+                                    textAlign: TextAlign.justify,
+                                  ),
+                                ],
+                              ),
+                            ),
                           )
+                        : Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Additional Variety Information',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Times New Roman'
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    'Key characteristics of Ugandan groundnut varieties:\n\n'
+                                    '1. Growth Habit:\n'
+                                    '   - Bunch types: Serenut 3R, 4T, 5R, 6T (spacing 45cm x 7.5-10cm)\n'
+                                    '   - Semi-erect types: Serenut 1R, 2, 7T, 8R, 9T, 10R, 11T, 12R, 13T, 14R (spacing 45cm x 10-15cm)\n\n'
+                                    '2. Maturity Groups:\n'
+                                    '   - Early (85-90 days): Acholi White, Red Beauty\n'
+                                    '   - Medium (90-100 days): Serenut 3R, 4T, 6T\n'
+                                    '   - Late (100-110 days): Most Serenut varieties\n\n'
+                                    '3. Special Traits:\n'
+                                    '   - Drought tolerance: Serenut 8R has "stay-green" trait\n'
+                                    '   - Disease resistance: Most Serenut varieties resistant to rosette\n'
+                                    '   - Pest tolerance: Serenut 10R shows tolerance to leafminer\n\n'
+                                    '4. Regional Preferences:\n'
+                                    '   - Northern/Eastern Uganda prefer tan/white varieties\n'
+                                    '   - Western/Central/Southern prefer red varieties\n\n'
+                                    '5. Seed Sources:\n'
+                                    '   - Available from NARO/NaSARRI Serere\n'
+                                    '   - Certified seed companies\n'
+                                    '   - Select trained farmers',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: 'Times New Roman'
+                                    ),
+                                    textAlign: TextAlign.justify,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                  )
+
+
                         ],
                       ),
                   ),
