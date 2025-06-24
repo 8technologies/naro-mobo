@@ -93,11 +93,16 @@ Widget titleValueWidget(String title, String subTitle) {
   );
 }
 
-Widget titleValueWidget2(String title, String subTitle,
-    {double vertical = 0, double horizontal = 0}) {
+Widget titleValueWidget2(
+  String title,
+  String subTitle, {
+  double vertical = 0,
+  double horizontal = 0,
+  Color? textColor,
+}) {
   return Container(
     alignment: Alignment.centerRight,
-    padding: EdgeInsets.symmetric(vertical: vertical,horizontal: horizontal),
+    padding: EdgeInsets.symmetric(vertical: vertical, horizontal: horizontal),
     child: Flex(
       direction: Axis.horizontal,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -108,7 +113,7 @@ Widget titleValueWidget2(String title, String subTitle,
           child: FxText.bodyLarge(
             '$title : '.toUpperCase(),
             textAlign: TextAlign.left,
-            color: Colors.black,
+            color: textColor ?? Colors.black,
             fontWeight: 700,
           ),
         ),
@@ -120,6 +125,7 @@ Widget titleValueWidget2(String title, String subTitle,
             subTitle.isEmpty ? "-" : '$subTitle',
             textAlign: TextAlign.right,
             fontWeight: 500,
+            color: textColor,
           ),
         ),
       ],

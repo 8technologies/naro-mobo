@@ -148,97 +148,122 @@ class PestsScreenState extends State<PestsScreen> {
                 width: 10,
               )
             ]),
-        body: RefreshIndicator(
-          onRefresh: my_init,
-          color: CustomTheme.primary,
-          backgroundColor: MyColors.accent,
-          child: is_loading
-              ? listLoader()
-              : items.isEmpty
-                  ? noItemWidget('No items found', () {
-                      my_init();
-                    })
-                  : ListView.separated(
-                      separatorBuilder: (BuildContext context, int index) {
-                        return Divider(
-                          height: 1,
-                          color: Colors.grey[300],
-                        );
-                      },
-                      itemCount: items.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        PestsAndDiseaseModel item = items[index];
-                        return InkWell(
-                          onTap: () async {
-                            if (isPick) {
-                              Navigator.pop(context, item);
-                              return;
-                            }
-                            Get.to(() => PestScreen(item));
-                            setState(() {});
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 15,
-                              vertical: 7,
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                FxContainer(
-                                  borderRadiusAll: 10,
-                                  paddingAll: 2,
-                                  child: ClipRRect(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10)),
-                                    child: true
-                                        ? roundedImage(
-                                            "${AppConfig.STORAGE_URL}/${item.photo}",
-                                            4,
-                                            5,
-                                          )
-                                        : Image(
-                                            image:
-                                                AssetImage(AppConfig.NO_IMAGE),
-                                            width: 65,
-                                            height: 50,
-                                            fit: BoxFit.cover,
+        body: Column(
+          children: [
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: my_init,
+                color: CustomTheme.primary,
+                backgroundColor: MyColors.accent,
+                child: is_loading
+                    ? listLoader()
+                    : items.isEmpty
+                        ? noItemWidget('No items found', () {
+                            my_init();
+                          })
+                        : ListView.separated(
+                            separatorBuilder: (BuildContext context, int index) {
+                              return Divider(
+                                height: 1,
+                                color: Colors.grey[300],
+                              );
+                            },
+                            itemCount: items.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              PestsAndDiseaseModel item = items[index];
+                              return InkWell(
+                                onTap: () async {
+                                  if (isPick) {
+                                    Navigator.pop(context, item);
+                                    return;
+                                  }
+                                  Get.to(() => PestScreen(item));
+                                  setState(() {});
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 15,
+                                    vertical: 7,
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      FxContainer(
+                                        borderRadiusAll: 10,
+                                        paddingAll: 2,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.all(Radius.circular(10)),
+                                          child: true
+                                              ? roundedImage(
+                                                  "${AppConfig.STORAGE_URL}/${item.photo}",
+                                                  4,
+                                                  5,
+                                                )
+                                              : Image(
+                                                  image:
+                                                      AssetImage(AppConfig.NO_IMAGE),
+                                                  width: 65,
+                                                  height: 50,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Expanded(
+                                          child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          FxText.titleLarge(
+                                            item.category,
+                                            fontWeight: 800,
+                                            color: Colors.black,
+                                            height: 1.0,
                                           ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: FxText(
+                                                    item.category.toUpperCase(),
+                                                    fontWeight: 900,
+                                                    fontSize: 12,
+                                                    color: MyColors.accent),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ))
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Expanded(
-                                    child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    FxText.titleLarge(
-                                      item.category,
-                                      fontWeight: 800,
-                                      color: Colors.black,
-                                      height: 1.0,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: FxText(
-                                              item.category.toUpperCase(),
-                                              fontWeight: 900,
-                                              fontSize: 12,
-                                              color: MyColors.accent),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ))
-                              ],
-                            ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
+              ),
+            ),
+            SizedBox(height: 15,),
+            // add report pest case button
+            if (!isPick)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                child: FxButton.block(
+                  onPressed: () {
+                    //go to report pest case screen
+                    Get.toNamed('/report_pest_case', arguments: {
+                      'isPicker': isPick,
+                    });
+                  },
+                  child: FxText.bodyLarge(
+                    "Report Pest Case",
+                    color: Colors.white,
+                    fontWeight: 600,
+                  ),
+                ),
+              )
+          ],
         ));
   }
 }

@@ -15,25 +15,23 @@ export 'custom_theme.dart';
 export 'navigation_theme.dart';
 
 class AppTheme {
-
-
   static InputDecoration InputDecorationTheme1(
       {bool isDense = true,
-        String label = "",
-        IconData iconData = Icons.edit,
-        String hintText = ""}) {
+      String label = "",
+      IconData iconData = Icons.edit,
+      String hintText = ""}) {
     return InputDecoration(
       hintText: hintText.isEmpty ? null : hintText,
       isDense: isDense,
       label: (label.isEmpty)
           ? null
           : Text(
-        label,
-        style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-            color: Colors.grey.shade500),
-      ),
+              label,
+              style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                  color: Colors.grey.shade500),
+            ),
 
       /*prefixIcon: Icon(
         iconData,
@@ -61,14 +59,14 @@ class AppTheme {
 
   static TextStyle getTextStyle(TextStyle? textStyle,
       {int fontWeight = 500,
-        bool muted = false,
-        bool xMuted = false,
-        double letterSpacing = 0.15,
-        Color? color,
-        TextDecoration decoration = TextDecoration.none,
-        double? height,
-        double wordSpacing = 0,
-        double? fontSize}) {
+      bool muted = false,
+      bool xMuted = false,
+      double letterSpacing = 0.15,
+      Color? color,
+      TextDecoration decoration = TextDecoration.none,
+      double? height,
+      double wordSpacing = 0,
+      double? fontSize}) {
     double? finalFontSize = fontSize != null ? fontSize : textStyle!.fontSize;
 
     Color? finalColor;
@@ -92,8 +90,9 @@ class AppTheme {
   }
 
   static ThemeData shoppingManagerTheme = getShoppingManagerTheme();
+
   static ThemeData getShoppingManagerTheme() {
-    return createThemeM3(themeType, CustomTheme.primary );
+    return createThemeM3(themeType, CustomTheme.primary);
   }
 
   static ThemeData createThemeM3(ThemeType themeType, Color seedColor) {
@@ -118,8 +117,6 @@ class AppTheme {
     return lightTheme.copyWith(colorScheme: colorScheme);
   }
 
-
-
   static ThemeType themeType = ThemeType.light;
   static TextDirection textDirection = TextDirection.ltr;
 
@@ -140,9 +137,6 @@ class AppTheme {
       onSecondaryContainer: Color(0xff570202),
     ),
   );
-
-
-
 
   static init() {
     resetFont();
@@ -202,9 +196,6 @@ class AppTheme {
         systemOverlayStyle: Utils.init_theme(),
         actionsIconTheme: IconThemeData(color: Colors.white)),
 
-    /// Card Theme
-    cardTheme: CardTheme(color: Color(0xfff6f6f6)),
-
     textTheme: TextTheme(
       titleLarge: GoogleFonts.lato(),
       bodyLarge: GoogleFonts.lato(),
@@ -227,16 +218,6 @@ class AppTheme {
     /// Bottom AppBar Theme
     bottomAppBarTheme:
         BottomAppBarTheme(color: Color(0xffeeeeee), elevation: 2),
-
-    /// Tab bar Theme
-    tabBarTheme: TabBarTheme(
-      unselectedLabelColor: Color(0xff495057),
-      labelColor: Color(0xff3d63ff),
-      indicatorSize: TabBarIndicatorSize.label,
-      indicator: UnderlineTabIndicator(
-        borderSide: BorderSide(color: Color(0xff3d63ff), width: 2.0),
-      ),
-    ),
 
     /// CheckBox theme
     checkboxTheme: CheckboxThemeData(
@@ -297,13 +278,16 @@ class AppTheme {
     /// Other Colors
     splashColor: Colors.white.withAlpha(100),
     indicatorColor: Color(0xffeeeeee),
-    highlightColor: Color(0xffeeeeee), colorScheme: ColorScheme.light(
-        primary: CustomTheme.primary,
-        onPrimary: Color(0xffeeeeee),
-        onSecondary: Color(0xffeeeeee),
-        surface: Color(0xffeeeeee),
-        background: Color(0xffeeeeee),
-        onBackground: Color(0xff495057)).copyWith(background: Color(0xffffffff)).copyWith(error: Color(0xfff0323c)),
+    highlightColor: Color(0xffeeeeee),
+    colorScheme: ColorScheme.light(
+            primary: CustomTheme.primary,
+            onPrimary: Color(0xffeeeeee),
+            onSecondary: Color(0xffeeeeee),
+            surface: Color(0xffeeeeee),
+            background: Color(0xffeeeeee),
+            onBackground: Color(0xff495057))
+        .copyWith(background: Color(0xffffffff))
+        .copyWith(error: Color(0xfff0323c)),
   );
 
   /// -------------------------- Dark Theme  -------------------------------------------- ///
@@ -320,9 +304,6 @@ class AppTheme {
 
     /// AppBar Theme
     appBarTheme: AppBarTheme(backgroundColor: Color(0xff161616)),
-
-    /// Card Theme
-    cardTheme: CardTheme(color: Color(0xff222327)),
 
     /// Input (Text-Field) Theme
     inputDecorationTheme: InputDecorationTheme(
@@ -356,16 +337,6 @@ class AppTheme {
     /// Bottom AppBar Theme
     bottomAppBarTheme:
         BottomAppBarTheme(color: Color(0xff464c52), elevation: 2),
-
-    /// Tab bar Theme
-    tabBarTheme: TabBarTheme(
-      unselectedLabelColor: Color(0xff495057),
-      labelColor: Color(0xff069DEF),
-      indicatorSize: TabBarIndicatorSize.label,
-      indicator: UnderlineTabIndicator(
-        borderSide: BorderSide(color: Color(0xff069DEF), width: 2.0),
-      ),
-    ),
 
     ///Switch Theme
     switchTheme: SwitchThemeData(
@@ -417,7 +388,8 @@ class AppTheme {
     disabledColor: Color(0xffa3a3a3),
     highlightColor: Colors.white.withAlpha(28),
     cardColor: Color(0xff282a2b),
-    splashColor: Colors.white.withAlpha(56), colorScheme: const ColorScheme.dark(
+    splashColor: Colors.white.withAlpha(56),
+    colorScheme: const ColorScheme.dark(
       primary: Color(0xff069DEF),
       secondary: Color(0xff069DEF),
       background: Color(0xff161616),

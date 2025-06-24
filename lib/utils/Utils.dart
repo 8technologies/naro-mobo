@@ -115,7 +115,6 @@ class Utils {
     return true;
   }
 
-
   static bool contains(List<dynamic> items, dynamic item) {
     bool yes = false;
     for (var e in items) {
@@ -151,10 +150,10 @@ class Utils {
     LoggedInUserModel userModel = await LoggedInUserModel.getLoggedInUser();
     String token = userModel.remember_token;
     body['user_id'] = userModel.id;
-    print("===> ${AppConfig.API_BASE_URL + "/$path"} <===");
     var da = dioPackage.FormData.fromMap(body); //.fromMap();
     try {
-      response = await dio.post(AppConfig.API_BASE_URL + "/$path",
+      response = await dio.post(
+          (!path.contains('http')) ? AppConfig.API_BASE_URL + "/$path" : path,
           data: da,
           options: Options(
             headers: <String, String>{
@@ -218,17 +217,17 @@ class Utils {
     var dio = Dio();
 
     try {
-      response = await dio.get(
-          addBase? AppConfig.API_BASE_URL + "/$path":path,
-          queryParameters: body,
-          options: Options(
-            headers: {
-              "authorization": "Bearer <your token>",
-              "User-Id": '${u.id}',
-              'Content-Type': 'application/json; charset=UTF-8',
-              'accept': 'application/json',
-            },
-          ));
+      response =
+          await dio.get(addBase ? AppConfig.API_BASE_URL + "/$path" : path,
+              queryParameters: body,
+              options: Options(
+                headers: {
+                  "authorization": "Bearer <your token>",
+                  "User-Id": '${u.id}',
+                  'Content-Type': 'application/json; charset=UTF-8',
+                  'accept': 'application/json',
+                },
+              ));
 
       return response.data;
     } on DioError catch (e) {
@@ -705,7 +704,6 @@ class Utils {
     }
   }
 
-
   static String to_date_2(dynamic updatedAt) {
     String dateText = "__/__/___";
     if (updatedAt == null) {
@@ -721,7 +719,6 @@ class Utils {
     } catch (e) {}
     return dateText;
   }
-
 
   static String to_date_3(dynamic updatedAt) {
     String dateText = "__/__/___";

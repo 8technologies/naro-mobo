@@ -8,6 +8,7 @@ import 'package:marcci/theme/app_theme.dart';
 import 'package:marcci/utils/Utils.dart';
 
 import 'LeafspotDetectionScreen.dart';
+import 'chatbot_e_extension/AiChatScreen.dart';
 
 class AIHomeScreen extends StatefulWidget {
   @override
@@ -106,6 +107,10 @@ class _AIHomeScreenState extends State<AIHomeScreen> {
                     '24/7 Instant support for all your farming queries.',
               ),
               onTap: () {
+                Get.to(() => AiChatScreen());
+
+                return;
+
                 Get.to(() => ConversationListScreen(
                     userId: mainController.loggedInUserModel.id));
               },

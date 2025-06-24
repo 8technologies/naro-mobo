@@ -2,7 +2,7 @@ name: marcci
 description: NARO research Project
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-version: 1.0.0+7
+version: 1.0.0+8
 
 environment:
   sdk: '>=3.0.6 <4.0.0'
@@ -76,4 +76,5 @@ flutter:
     - assets/images/logo.png
     - assets/images/ai_prediction_1.jpeg
     - assets/images/ai_prediction.jpeg
+    - assets/images/ai.png
     - assets/images/tomorrow/
